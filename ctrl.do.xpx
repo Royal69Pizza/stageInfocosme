@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./css/bootstrap.min.css" type="text/css" />
+    <title></title>
+</head>
+<body>
+<div class="container-fluid Wrapper"  >
+    <div class="row " style="height: 850px;">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 bg-info text-white ">
+            <form action="/zprive/Landry/projet.xpx" method="post" id="FormFinalTraitement" target="_parent"  >
+                <input type="hidden" id="SECTION_NAME" name="SECTION_NAME" value="$SECTION_NAME$">
+                <input type="hidden" id="PATH" name="PATH" value="$PATH$">
+                <cond expr="'$megaObject$' != ''">
+                    <file open="ctrlFile" path="$PATH$/$SECTION_NAME$Form.ctrl.json" mode="write">
+                    <file write="ctrlFile" content="{\n" />
+                    <file write="ctrlFile" content="$megaObject$" />
+                    <file write="ctrlFile" content="\n}" />
+                    <file close="ctrlFile" />
+                </cond>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>FormFinalTraitement.submit()</script>
+
+</body>
+</html>

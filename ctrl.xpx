@@ -1,0 +1,714 @@
+<include file="/zprive/Atelis7.0/Inc/parseJSON.inc.xpx">
+
+<!-- Lecture du fichier MAP -->
+<file open="ctrlMap" path="/zprive/Atelis7.0/Automation/HTMLElements.map/ctrl.map" />
+<file read="ctrlMap" content="fileCtrlJsonMap" />
+<file close="ctrlMap"/>
+<function exec="parseJSONObject" jsonObject="$fileCtrlJsonMap$" jsonVar="ctrlMap">
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	<link rel="stylesheet" href="./style.css" type="text/css" />
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+	<title>Formulaire ctvl</title>
+</head>
+<body>
+	<nav class="navbar navbar-dark" id="Menu">
+		<div class="container-fluid">
+		<a class="navbar-brand" href = "#">Generateur de fichier ctrl.json</a>
+	</nav>
+	<div class="container-fluid">
+		
+		<div class="row">
+
+			<!-- [GAUCHE DE LA PAGE] Saisies des informations -->
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 pb-3 Gauche">
+				<div class="container-fluid align-items-center justify-content-center">
+					<p id="title" class="text-center">Formulaire 1</p>
+
+					<!-- no de la section & path -->
+					<div class="row mb-2 mt-2">
+						<div class="col-5">
+							<label>Section Name</label>
+							<input type="text" id="sectionName" name="sectionName" value="$sectionName$" class="form-control" style="width : 100%;" required disabled>
+						</div>
+						
+						<div class="col-7">
+							<label>Path</label>
+							<input type="text" id="path" name="path" value="$path$" class="form-control" style="width : 100%;" required disabled>
+						</div>
+					</div>
+
+					<!-- Valeurs de base -->
+					<div class="row mb-2 mt-5">
+						<div class="col-6">
+							<label>Name</label>
+							<input type="text" id="name" name="name" class="form-control" style="width : 100%;" value="" required>
+						</div>
+
+						<div class="col-6">
+							<label>type</label>
+							<select id="type" name="type" class="form-select" style="width : 100%;">
+								<!-- a = 2 car on enlève default -->
+								<set name="a" value="2"/>
+								<option value="empty" selected>Selectionnez</option>
+								<while expr="$a$<=$ctrlMap.type.count$">
+									<set name="type" expr="$ctrlMap.type[a].name$">
+									<option value="$type$">$type$</option>
+									<set name="a" expr="$a$+1"/>
+								</while>
+							</select>
+						</div>
+					</div>
+
+					<div id="Automatic">
+						<script type="text/javascript">
+							// Liste pour créer les objets et affcher les infos saisies
+							let inputsBrut = [];
+
+							// Liste pour afficher les items selon le type selectionné
+							let nomsTypesPossibles = [];
+
+						</script>
+
+						<!-- [AUTO] Affichage du formulaire -->
+						<!-- Affichage des différents types de ctrl.map -->
+						<set name="a" value="1"/>
+						<while expr="$a$<=$ctrlMap.type.count$">
+							<set name="nomInput" value="$ctrlMap.type[a].name$"/>
+							
+							<div class="row mb-2 mt-5" id="$nomInput$" style="display:none;">
+								<p class="text-left" style="margin:  0; font-size: 25px;">$nomInput$</p>
+
+								<script type="text/javascript">
+									nomsTypesPossibles.push($nomInput$);
+								</script>
+
+								<!-- Affichage des différents attributs des types de ctrl.map -->
+								<set name="i" value="1"/>
+								<set name="attributInput" value="$ctrlMap.type.[nomInput].[i]$">
+								<cond expr="$attributInput$"><set name="attributInput" value="$ctrlMap.type.[nomInput][i].name$"></cond>
+
+								<while expr="!$attributInput$">
+									<div class="col-12">
+										<label id="labelName">$attributInput$</label>
+										<cond expr="'$ctrlMap.type.[nomInput].[attributInput]$' = 'bool'">
+											<input type="checkbox" id="$attributInput$" name="$nomInput$" class="form-check-input" value="FALSE">
+										<else expr="'$ctrlMap.type.[nomInput].[attributInput]$' = 'text'">
+											<input type="text" id="$attributInput$" name="$nomInput$" class="form-control" style="width:100%;" value="">
+										<else expr="'$ctrlMap.type.[nomInput].[attributInput]$' = 'number'">
+											<input type="number" id="$attributInput$" name="$nomInput$" class="form-control" style="width:100%;" value="">
+										<else>
+											<div class="row">
+												<cond expr="!$attributInput$">
+													<set name="attributInput" value="$ctrlMap.type.[nomInput][i].name$"/>
+
+													<set name="counter" value="$ctrlMap.type.[nomInput].[attributInput].count$"/>
+													<set name="j" value="1"/>
+													<while expr="$j$ <= $counter$">
+														<div class="col-3">
+															<input type="text" id="$ctrlMap.type.[nomInput].[attributInput].[j]$" name="$ctrlMap.type.[nomType].[typeType].[j]$" class="form-control" style="width:100%;" value="">
+															<script type="text/javascript">
+																inputsBrut.push($ctrlMap.type.[nomInput].[attributInput].[j]$);
+															</script>
+															<set name="j" expr="$j$+1"/>
+														</div>
+														
+													</while>
+
+												</cond>
+											</div>
+											
+										</cond>
+										
+									</div>
+
+									<script type="text/javascript">
+										inputsBrut.push($attributInput$);
+
+										// Donne la value a la checkbox
+										$$(":input[type='checkbox']").on('change', function(){
+											$$(this).val(this.checked ? "TRUE" : "FALSE");
+										});
+
+										// Regaex pour les input de type number
+										var regex = /[0-9]+/;
+
+										$$(':input[type="number"]').on("input", function(){
+											var inputVal = $$(this).val();
+
+											if(!regex.test(inputVal)){
+												$$(this).val("");
+											}
+										});
+
+									</script>
+
+									<set name="i" expr="$i$+1"/>
+									<set name="attributInput" value="$ctrlMap.type.[nomInput].[i]$">
+								</while>
+							</div>
+							<set name="a" expr="$a$+1"/>
+						</while>
+					</div>
+
+					<!-- Validation -->
+					<div class="row mb-3 mt-5">
+						<div class="col-12" id="TEMPLATE_EDIT">
+							<button id="buttonCreate" type="button" role="button" class="btn btn-primary" onclick="Create()">Ajouter</button>
+							<template id="ModifieLigne">
+								<button id="buttonModifie" type="button" role="button" class="btn btn-primary" onclick="">Modifier</button>
+								<button id="buttonSupprime" type="button" role="button" class="btn btn-danger" onclick="">Supprimer</button>
+								<input id="colonneIndexModifie" type="hidden" value="">
+								<input id="colonneIndexBefore" type="hidden" value="">
+								<input id="megaObjectModifie" type="hidden" value="">
+							</template>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<!-- [DROITE DE LA PAGE] Affichage de chaque foemulaire créé -->
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 pb-3 Droite">
+				<p id="title2" class="text-center mb-2">Contenu du fichier</p>
+				<div class="container-fluid">
+	         	<div class="row mb-2" id="Ligne">
+	         		<div class="col-12">
+	         			<form id="OkayOKay" method="POST" action="./ctrl.do.xpx">
+	         				<input type="hidden" id="SECTION_NAME" name="SECTION_NAME" value="$sectionName$">
+	         				<input type="hidden" id="PATH" name="PATH" value="$path$">
+	         				<table id="Table" class="table table-striped table-light text-dark">
+			         			<thead>
+			         				<tr class="text-center">
+			         					<th scope="col" colspan="3">Fichier ctrl</th>
+			         				</tr>
+			         			</thead>
+			         			<tbody id="TEMPLATE">
+										<template id="AfficheLigne">
+											<tr class="ligne">
+												<td id="colonneIndex"></td>
+												<td class="colonne"></td>
+												<td><button id="boutonModif" class="btn btn-warning" onclick="Modifie(this)"></button></td>
+												<input id="ligneName" type="hidden" value="">
+												<input id="ligneType" type="hidden" value="">
+												<input id="listeIds" type="hidden" value="">
+												<input id="listeValeurs" type="hidden" value="">
+											</tr>
+										</template>
+										<tr>
+									</tbody>
+			         		</table>
+			         		<input type="hidden" id="megaObject" name="megaObject" value="">
+			         		<button form="OkayOKay" id="boutonCreate" type="submit" class="btn btn-success">Creer le fichier</button>
+	         			</form>
+	         		</div>
+	         	</div>
+		      </div>
+			</div>
+
+			<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalTitle" aria-hidden="true">
+			  <div class="modal-dialog" role="document">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <h5 class="modal-title" id="successModalTitle">Ligne Inserée</h5>
+			        <button type="button" class="btn btn-success" data-dismiss="modal" aria-label="Close">
+			          <span aria-hidden="true">Ok</span>
+			        </button>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+
+			<div class="modal fade" id="champRequis" tabindex="-1" role="dialog" aria-labelledby="champRequisArea" aria-hidden="true">
+			  <div class="modal-dialog" role="document">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <h5 class="modal-title" id="champRequisArea"></h5>
+			        <button type="button" class="btn btn-warning" data-dismiss="modal" aria-label="Close">
+			          <span aria-hidden="true">Ok</span>
+			        </button>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+
+			<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
+			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
+
+		</div>
+	</div>
+
+<script type="text/javascript">
+
+	// I N D E X //
+	var INDEX = 0;
+
+
+
+	// O B J E T S //
+	// div0 contiendra tous les objets créés
+	
+	class div0 {
+		constructor(aMegaListOfObjects) {
+			this.megaListOfObjects = aMegaListOfObjects;
+		}
+
+		getMegaObjects() {
+			return this.megaListOfObjects;
+		}
+		getMegaObjectAtEnd() {
+			return this.megaListOfObjects[this.megaListOfObjects.length - 1];
+		}
+		addMegaObject(aMegaObject) {
+			this.megaListOfObjects.push(aMegaObject);
+		}
+		addMegaObjectAtIndex(index, aMegaObject) {
+			this.megaListOfObjects.splice(index, 0, aMegaObject);
+		}
+		getMegaObjectAtIndex(index) {
+			return this.megaListOfObjects[index];
+		}
+		deleteMegaObject(index) {
+			this.megaListOfObjects.splice(index, 1);
+		}
+	}
+
+	class div1 extends div0 {
+		constructor(aMegaListOfObjects, aDiv1Name, aListOfObjects) {
+			super(aMegaListOfObjects);
+			this.name = aDiv1Name;
+			this.listOfObjects = aListOfObjects;
+		}
+
+		getNameOfDiv1() {
+			return this.name;
+		}
+
+		getObjects() {
+			return this.listOfObjects;
+		}
+		addObject(aObjectNameAndType) {
+			this.listOfObjects.push(aObjectNameAndType);
+		}
+	}
+
+	class div2 extends div1 {
+		constructor(aMegaListOfObjects, aDiv1Name, aListOfObjects, aDiv2Name, aDiv2Type) {
+			super(aMegaListOfObjects, aDiv1Name, aListOfObjects);
+			this.name = aDiv2Name;
+			this.type = aDiv2Type;
+		}
+
+		getNameOfDiv2() {
+			return this.name;
+		}
+		getTypeOfDiv2() {
+			return this.type;
+		}
+	}
+
+	// Initialistaion de l'objet base qui contiendra tous les autres
+	var objectDiv0 = new div0([]);
+
+	// Liste qui contiendra tous les objets pour les écrire dans le fichier qu'on va créer
+	var megaObjetList = [];
+
+
+
+	// F U N C T I O N   -   récupère le type séléctionné et affiche les rows correspondantes //
+	// rawNomLigne = noms des types ex: blktext, blknumber..
+	// valueActive = valeur du select
+
+	var selectionActive = document.getElementById("type");
+	selectionActive.addEventListener("change", ChangeType);
+
+	function ChangeType() {
+		var valueActive = document.getElementById("type").value;
+
+		nomsTypesPossibles.forEach(function(item, index, array) {
+			if (item.id == valueActive) {
+				const inputActive = document.getElementById(item.id);
+				inputActive.setAttribute("style", "display:flex;");
+
+				const def = document.getElementById("default");
+				def.setAttribute("style", "display:flex;");
+			}
+			else {
+				const inputNonActive = document.getElementById(item.id);
+				inputNonActive.setAttribute("style", "display:none;");
+
+				$$("div#Automatic :input").each(function(){
+					var input = $$(this);
+					input.val("");
+				});
+			}
+		});
+	}
+
+
+
+	// F U N C T I O N   -   input is null ? //
+	// input = DOM element
+	// inputId = DOM id element
+	// SORTIE = True || False
+
+	function fieldIsNull(input ,inputId) {
+		var text = inputId;
+		if (input == "empty" || input == "") {
+			$$("#champRequisArea").text("Un "+text+" est requis !");
+			$$(document).ready(function() {
+				$$("#champRequis").modal();
+			});
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+
+
+	// F U N C T I O N   -   Création des lignes ajoutées //
+	// index = index du formulaire (INDEX || INDEX_HERE)
+	// name = input name du formulaire
+	// type = input type du formulaire
+	// idInputs = Liste de tous les id des inputs du formulaire (sauf name & type)
+	// valeurInputs = Liste de toutes les valeurs des inputs du formulaire (sauf name & type)
+
+	function CloneRow(index, name, type, idInputs, valeurInputs) {
+		const tbody = document.querySelector("#TEMPLATE");
+		const template = document.querySelector("#AfficheLigne");
+		const clone = document.importNode(template.content, true);
+		const ligne = clone.querySelector(".ligne");
+		const colonne = clone.querySelector(".colonne");
+		const colonneIndex = clone.querySelector("#colonneIndex");
+
+		const listeIds = clone.querySelector("#listeIds");
+		const listeValeurs = clone.querySelector("#listeValeurs");
+		const ligneName = clone.querySelector("#ligneName");
+		const ligneType = clone.querySelector("#ligneType");
+
+		const boutonModif = clone.querySelector("#boutonModif");
+
+		// Affichage de l'index et du dernier objet objectDiv1 crée
+
+		var affichage = objectDiv0.getMegaObjectAtIndex(index-1);
+		if (affichage === undefined) {
+			var affichage = objectDiv0.getMegaObjectAtEnd();
+		}
+		colonne.textContent = affichage;
+		colonne.setAttribute("style", "width:100%");
+
+		colonneIndex.textContent = index;
+		var colonneIndexIndexI = "colonneIndexIndexI"+index;
+		colonneIndex.setAttribute("id", colonneIndexIndexI);
+
+		boutonModif.textContent = "Modifier";
+		var idIndexModif = "boutonModif"+index;
+		boutonModif.setAttribute("id", idIndexModif);
+		boutonModif.setAttribute("type", "button");
+		boutonModif.setAttribute("class", "btn btn-warning EDIT");
+		boutonModif.setAttribute("value", index);
+		boutonModif.setAttribute("onclick", "Modifie(this)");
+
+		var iname = "ligneName"+index;
+		ligneName.setAttribute("id", iname);
+		ligneName.setAttribute("value", name);
+
+		var itype = "ligneType"+index;
+		ligneType.setAttribute("id", itype);
+		ligneType.setAttribute("value", type);
+
+		var idListeIds = "listeIds"+index;
+		listeIds.setAttribute("id", idListeIds);
+		listeIds.setAttribute("value", idInputs);
+
+		var idListeValeurs = "listeValeurs"+index;
+		listeValeurs.setAttribute("id", idListeValeurs);
+		listeValeurs.setAttribute("value", valeurInputs);
+
+		tbody.appendChild(clone);
+	}
+
+
+
+	// F U N C T I O N   -   Création des lignes ajoutées //
+	// index = index de la ligne séléctionnée pour la modification (INDEX_HERE)
+	//indexBefore = index précédant la modification (INDEX)
+
+	function CloneButtons(index, indexBefore) {
+		const div = document.querySelector("#TEMPLATE_EDIT");
+		const template = document.querySelector("#ModifieLigne");
+		const clone = document.importNode(template.content, true);
+		const buttonEdit = clone.querySelector("#buttonModifie");
+		const buttonDel = clone.querySelector("#buttonSupprime");
+		const colonneIndex = clone.querySelector("#colonneIndexModifie");
+		const colonneIndexBefore = clone.querySelector("#colonneIndexBefore");
+		const megaObjectModifie = clone.querySelector("#megaObjectModifie");
+		
+		colonneIndex.setAttribute("id", "colonneIndexModifie");
+		colonneIndex.setAttribute("value", index);
+
+		colonneIndexBefore.setAttribute("id", "colonneIndexBefore");
+		colonneIndexBefore.setAttribute("value", indexBefore);
+
+		var megaObjectModifieValue = $$("#megaObject").val();
+		megaObjectModifie.setAttribute("id", "megaObjectModifie");
+		megaObjectModifie.setAttribute("value", megaObjectModifieValue);
+		
+		buttonEdit.textContent = "Modifier";
+		buttonEdit.setAttribute("id", "ValiderModification");
+		buttonEdit.setAttribute("class", "btn btn-primary");
+		buttonEdit.setAttribute("onclick", "ValideModification(this)");
+
+		buttonDel.textContent = "Supprimer";
+		buttonDel.setAttribute("id", "SupprimeLigne");
+		buttonDel.setAttribute("class", "btn btn-danger");
+		buttonDel.setAttribute("onclick", "Supprime()");
+		
+		div.appendChild(clone);
+	}
+
+
+
+	// F U N C T I O N   -   Transforme les valeurs saisies en objets et créé une ligne dans le tableau de droite pour les afficher avant la validation.
+
+	function Create() {
+		var name = $$("#name").val();
+		var nameId = $$("#name").attr('id');
+		var type = $$("#type").val();
+		var typeId = $$("#type").attr('id');	
+		
+		// Name is null ?
+		if (fieldIsNull(name, nameId) === false) {
+			var nomMegaObjet = '"'+name+'"';
+		}
+		else {
+			return;
+		}
+
+		// Type is null ?
+		if (fieldIsNull(type, typeId) === true) {
+			return;
+		}
+
+		let idInputs = []; // Valeur des ID
+		let valeurInputs = []; // Valeur des inputs
+		inputsBrut.forEach(function(item, index, array) {
+			idInputs.push(item.id);
+			valeurInputs.push(item.value);
+		});
+
+		// Création de l'objet div1
+		var objectDiv1 = new div1([], nomMegaObjet, []);
+
+		let idInputsPourUnObjet = [];
+		let valeurInputsPourUnObjet = [];
+		
+		// On transforme les ID et values de chaue truc en objectDiv2 et on les ajoute a la collection d'objets de div1
+		var objectDiv2 = new div2([], objectDiv1.getNameOfDiv1(), [], "type", type);
+		objectDiv1.addObject('\n 		"'+objectDiv2.getNameOfDiv2()+'": "'+objectDiv2.getTypeOfDiv2()+'"');
+
+ 		for (let i = 0; i < valeurInputs.length; i++) {
+			if (valeurInputs[i] != "") {
+				var objectDiv2 = new div2([], objectDiv1.getNameOfDiv1(), [], idInputs[i], valeurInputs[i]);
+				objectDiv1.addObject('\n 		"'+objectDiv2.getNameOfDiv2()+'": "'+objectDiv2.getTypeOfDiv2()+'"');
+				idInputsPourUnObjet[i] = objectDiv2.getNameOfDiv2();
+				valeurInputsPourUnObjet[i] = objectDiv2.getTypeOfDiv2();
+			}
+		}
+
+		// On ajoute l'objectDiv1 à l'objectDiv0 qui contiendra tous les objectsDiv1 crées.
+		objectDiv0.addMegaObject("\n 	"+objectDiv1.getNameOfDiv1()+": {\n 	"+objectDiv1.getObjects()+"\n 	}");
+
+		megaObjetList.push(objectDiv0.getMegaObjectAtEnd());
+
+
+		INDEX+=1;
+
+
+		//Clonage de la ligne pour en ajouter une
+		CloneRow(INDEX, name, type, idInputsPourUnObjet, valeurInputsPourUnObjet);
+
+
+		// Change index du titre 
+		var titlePageIndex = INDEX + 1;
+		$$("#title").text("Formulaire "+titlePageIndex);
+		
+		
+		$$(document).ready(function() {
+			$$("#successModal").modal();
+		});
+
+		$$("#megaObject").val(megaObjetList);
+	}
+
+
+
+	// F U N C T I O N   -   Fonction qui modifie la ligne souhaitée en la remmettant dans le formulaire //
+	// element = td du tableau qui contient l'objet à modifier 
+
+	function Modifie(element) {
+		var INDEX_HERE = $$(element).val().substr(-1);
+
+		var iname = "#ligneName"+INDEX_HERE;
+		var tname = $$(iname).val();
+		$$("#name").val(tname);
+
+		var itype = "#ligneType"+INDEX_HERE;
+		var ttype = $$(itype).val();
+		$$("#type").val(ttype);
+
+		ChangeType();
+
+		var indexListeIds = "#listeIds"+INDEX_HERE;
+		let idsBrut = $$(indexListeIds).val();
+		let listeIds = idsBrut.split(",");
+
+		var indexListeValeurs = "#listeValeurs"+INDEX_HERE;
+		let valeursBrut = $$(indexListeValeurs).val();
+		let listeValeurs = valeursBrut.split(",");
+
+		for (let i = 0; i < listeValeurs.length; i++) {
+			if (listeValeurs[i] != "") {
+				$$("#"+listeIds[i]).val(listeValeurs[i]);
+			}
+		}
+
+		$$("#title").text("Formulaire "+INDEX_HERE);
+
+		$$("#buttonCreate").prop("disabled", true);
+
+
+		CloneButtons(INDEX_HERE, INDEX);
+		
+
+		var parentButton = $$(element).parents("tr").remove();
+
+		$$(".btn.btn-warning.EDIT").prop("disabled", true);
+		console.log(megaObjetList);
+	}
+
+
+
+	// F U N C T I O N   -   Valide la modification
+	// element = bouton modifier du formulaire
+
+	function ValideModification(element) {
+		var name = $$("#name").val();
+		var nameId = $$("#name").attr('id');
+		var type = $$("#type").val();
+		var typeId = $$("#type").attr('id');	
+		
+		// Name is null ?
+		if (fieldIsNull(name, nameId) === false) {
+			var nomMegaObjet = '"'+name+'"';
+		}
+		else {
+			return;
+		}
+
+		// Type is null ?
+		if (fieldIsNull(type, typeId) === true) {
+			return;
+		}
+
+
+		// Ajout des valeurs et des noms des inputs dans les listes
+		let idInputs = []; // Valeur des ID
+		let valeurInputs = []; // Valeur des inputs
+		inputsBrut.forEach(function(item, index, array) {
+			idInputs.push(item.id);
+			valeurInputs.push(item.value);
+		});
+
+		var INDEX_HERE = $$("#colonneIndexModifie").val();
+
+		objectDiv0.deleteMegaObject(INDEX_HERE-1);
+
+		var objectDiv1 = new div1([], nomMegaObjet, []);
+
+		let idInputsPourUnObjet = [];
+		let valeurInputsPourUnObjet = [];
+		// On transforme les ID et values de chaue truc en objectDiv2 et on les ajoute a la collection d'objets de div1
+		for (let i = 0; i < valeurInputs.length; i++) {
+			if (valeurInputs[i] != "") {
+				var objectDiv2 = new div2([], objectDiv1.getNameOfDiv1(), [], idInputs[i], valeurInputs[i]);
+				objectDiv1.addObject('\n 		"'+objectDiv2.getNameOfDiv2()+'": "'+objectDiv2.getTypeOfDiv2()+'"');
+				idInputsPourUnObjet[i] = objectDiv2.getNameOfDiv2();
+				valeurInputsPourUnObjet[i] = objectDiv2.getTypeOfDiv2();
+			}
+		}
+
+		objectDiv0.addMegaObjectAtIndex(INDEX_HERE-1, "\n{\n 	"+objectDiv1.getNameOfDiv1()+": {\n 	"+objectDiv1.getObjects()+"\n 	}\n}");
+
+		console.log(megaObjetList.splice(INDEX_HERE-1, 1));
+		megaObjetList.push(objectDiv0.getMegaObjectAtIndex(INDEX_HERE-1));
+
+		CloneRow(INDEX_HERE, name, type, idInputsPourUnObjet, valeurInputsPourUnObjet);
+
+		$$("#megaObject").val(megaObjetList);
+
+		$$("#colonneIndex"+INDEX_HERE).val(INDEX);
+
+		var titlePage = $$("#colonneIndexBefore").val();
+		var titlePageIndex = parseInt(titlePage, 10) + 1;
+		$$("#title").text("Formulaire "+titlePageIndex);
+
+		$$("#SupprimeLigne").remove();
+
+		$$("#colonneIndexBefore").remove();
+		$$("#colonneIndexModifie").remove();
+		$$("#megaObjectModifie").remove();
+
+		$$("#buttonCreate").prop("disabled", false);
+		$$(".btn.btn-warning.EDIT").prop("disabled", false);
+
+		$$(document).ready(function() {
+			$$("#successModal").modal();
+		});
+
+		$$(element).remove();
+		console.log(megaObjetList);
+	}
+
+
+
+	// F U N C T I O N   -+ç   Supprime la ligne
+
+	function Supprime() {
+		$$("#name").val("");
+
+		$$("#type").val("empty");
+
+		ChangeType();
+
+		var INDEX_HERE = $$("#colonneIndexModifie").val();
+
+		objectDiv0.deleteMegaObject(INDEX_HERE-1);
+
+		megaObjetList.splice(INDEX_HERE-1, 1);
+
+		$$("#ValiderModification").remove();
+		$$("#AnnulerModification").remove();
+		$$("#SupprimeLigne").remove();
+
+		$$("#buttonCreate").prop("disabled", false);
+
+		$$(".btn.btn-warning.EDIT").prop("disabled", false);
+
+		$$("#megaObject").val(megaObjetList);
+		console.log(megaObjetList);
+	}
+
+	
+</script>
+
+</body>
+</html>
